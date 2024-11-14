@@ -1,0 +1,69 @@
+//Transmitter       
+
+#include <SPI.h>
+#include <RF24.h>
+
+RF24 radio(9, 10); // CE, CSN pins
+const byte address[6] = "00001"; // Address for communication
+
+// Pin definitions
+const int joyX = A0; // Joystick X-axis
+const int joyY = A1; // Joystick Y-axis
+const int joyButton = 2; // Joystick button
+const int button1 = 3; // Additional button 1
+const int button2 = 4; // Additional button 2
+
+struct DataPackage {
+  int joystickX; // X-axis value
+  int joystickY; // Y-axis value
+  bool joyButton; // Joystick button pressed
+  bool button1;   // Additional button 1 pressed
+  bool button2;   // Additional button 2 pressed
+};
+
+DataPackage data; // Create a data structure
+
+void setup() {
+  pinMode(joyButton, INPUT_PULLUP);
+  pinMode(button1, INPUT_PULLUP);
+  pinMode(button2, INPUT_PULLUP);
+
+  Serial.begin(9600);
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening(); // Set this as a transmitter
+  
+  Serial.println("Transmitter Initialized: Waiting for connection...");
+}
+
+void loop() {
+  // Read joystick and button states
+  data.joystickX = analogRead(joyX);
+  data.joystickY = analogRead(joyY);
+  data.joyButton = !digitalRead(joyButton); // Inverted logic for button press
+  data.button1 = !digitalRead(button1);     // Inverted logic for button press
+  data.button2 = !digitalRead(button2);     // Inverted logic for button press
+
+  // Send the data structure
+  bool success = radio.write(&data, sizeof(DataPackage));
+  
+  // Print if data was successfully sent
+  if (success) {
+    Serial.println("Data Sent Successfully:");
+    Serial.print("Joystick X: ");
+    Serial.print(data.joystickX);
+    Serial.print(" Y: ");
+    Serial.print(data.joystickY);
+    Serial.print(" JoyBtn: ");
+    Serial.print(data.joyButton);
+    Serial.print(" Btn1: ");
+    Serial.print(data.button1);
+    Serial.print(" Btn2: ");
+    Serial.println(data.button2);
+  } else {
+    Serial.println("Failed to Send Data!");
+  }
+
+  delay(50); // Small delay to stabilize communication
+}
