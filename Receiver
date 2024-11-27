@@ -3,10 +3,10 @@
 #include <SPI.h>
 #include <RF24.h>
 
-#define in1 3 // L298n Motor Driver pins.
+#define in1 7 // L298n Motor Driver pins.
 #define in2 4
-#define in3 5
-#define in4 6
+#define in3 3
+#define in4 2
 
 RF24 radio(9, 10); // CE, CSN pins
 const byte address[6] = "00001"; // Address for communication
