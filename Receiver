@@ -1,4 +1,5 @@
 //Receiver
+//Receiver
 
 #include <SPI.h>
 #include <RF24.h>
@@ -107,14 +108,15 @@ void back() {
 }
 
 void left() {
-  analogWrite(in3, Speed);
-  analogWrite(in2, Speed);
+  analogWrite(in1, Speed);  // Rotate left motor backward
+  analogWrite(in4, Speed); // Rotate right motor forward
 }
 
 void right() {
-  analogWrite(in4, Speed);
-  analogWrite(in1, Speed);
+  analogWrite(in2, Speed);  // Rotate left motor forward
+  analogWrite(in3, Speed);  // Rotate right motor backward
 }
+
 
 void Stop() {
   analogWrite(in1, 0);
